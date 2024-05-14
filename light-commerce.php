@@ -16,7 +16,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// Define plugin constants
 define('LIGHT_COMMERCE_VERSION', '1.0.0');
 define('LIGHT_COMMERCE_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('LIGHT_COMMERCE_PLUGIN_URL', plugin_dir_url(__FILE__));
+
+function light_commerce_init() {
+    require_once( dirname( __FILE__ ) . '/vendor/autoload.php' );
+}
+add_action('plugins_loaded', 'light_commerce_init');
