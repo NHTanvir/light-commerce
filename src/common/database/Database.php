@@ -1,48 +1,72 @@
 <?php
-namespace Tanvir10\LightCommerce;
+namespace LightCommerce\Admin;
 
 class Database {
-    public static function setup() {
+    protected $wpdb;
+
+    public function __construct() {
         global $wpdb;
-        $charset_collate = $wpdb->get_charset_collate();
-
-
-        $table_definitions = array(
-            'lightcommerce_product' => array(
-                'id' => 'mediumint(9) NOT NULL AUTO_INCREMENT',
-                'name' => 'varchar(100) NOT NULL',
-                'description' => 'text',
-                'price' => 'decimal(10,2) NOT NULL',
-                'PRIMARY KEY' => '(id)'
-            ),
-            'lightcommerce_product_meta' => array(
-                'meta_id' => 'bigint(20) NOT NULL AUTO_INCREMENT',
-                'product_id' => 'bigint(20) NOT NULL',
-                'meta_key' => 'varchar(255)',
-                'meta_value' => 'longtext',
-                'PRIMARY KEY' => '(meta_id)',
-                'KEY product_id' => '(product_id)',
-                'KEY meta_key' => '(meta_key)'
-            ),
-
-        );
-
-
-        foreach ($table_definitions as $table_name => $columns) {
-            self::create_table($table_name, $columns, $charset_collate);
-        }
+        $this->wpdb = $wpdb;
+        add_action('plugins_loaded', [$this, 'activate']);
     }
 
-    private static function create_table($table_name, $columns, $charset_collate) {
-        global $wpdb;
-        $table_name = $wpdb->prefix . $table_name;
-        $sql = "CREATE TABLE IF NOT EXISTS $table_name (";
+    public function activate() {
+        $this->create_product_table();
+        $this->create_product_meta_table();
+        $this->create_order_table();
+        $this->create_order_meta_table();
+    }
 
-        foreach ($columns as $column => $definition) {
-            $sql .= "$column $definition, ";
-        }
+    private function create_product_table() {
+        $table_name = $this->wpdb->prefix . 'lightcommerce_product';
+        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            price DECIMAL(10, 2) NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )";
 
-        $sql .= ") $charset_collate;";
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
+
+    private function create_product_meta_table() {
+        $table_name = $this->wpdb->prefix . 'lightcommerce_product_meta';
+        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            product_id INT NOT NULL,
+            meta_key VARCHAR(255) NOT NULL,
+            meta_value TEXT,
+            FOREIGN KEY (product_id) REFERENCES " . $this->wpdb->prefix . "lightcommerce_product(id) ON DELETE CASCADE
+        )";
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
+
+    private function create_order_table() {
+        $table_name = $this->wpdb->prefix . 'lightcommerce_order';
+        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            customer_name VARCHAR(255) NOT NULL,
+            total_amount DECIMAL(10, 2) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )";
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
+
+    private function create_order_meta_table() {
+        $table_name = $this->wpdb->prefix . 'lightcommerce_order_meta';
+        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            order_id INT NOT NULL,
+            meta_key VARCHAR(255) NOT NULL,
+            meta_value TEXT,
+            FOREIGN KEY (order_id) REFERENCES " . $this->wpdb->prefix . "lightcommerce_order(id) ON DELETE CASCADE
+        )";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);

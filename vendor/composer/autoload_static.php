@@ -17,6 +17,7 @@ class ComposerStaticInit5b8c6402903efb999233462dab451d58
         'LightCommerce\\Admin\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/admin',
+            1 => __DIR__ . '/../..' . '/src/common/database',
         ),
     );
 

@@ -20,9 +20,11 @@ require_once(dirname(__FILE__) . '/vendor/autoload.php');
 class ClassLoader{
     public function __construct() {
         new Admin\Menu();
+        new Admin\Database();
     }
 }
 new ClassLoader;
+
 
 define('LIGHT_COMMERCE_VERSION', '1.0.0');
 define('LIGHT_COMMERCE_PLUGIN_DIR', plugin_dir_path(__FILE__));
