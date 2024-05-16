@@ -1,14 +1,7 @@
 {
-    "authors": [
-        {
-            "name": "Tanvir10",
-            "email": "naymulhasantanvir10@gmail.com"
-        }
-    ],
     "autoload": {
         "psr-4": {
-            "Tanvir10\\LightCommerce\\" : "src/"
-        },
-        "files": []
+            "LightCommerce\\Admin\\": "src/admin"
+        }
     }
 }

@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Tanvir10\\LightCommerce\\' => array($baseDir . '/src'),
+    'LightCommerce\\Admin\\' => array($baseDir . '/src/admin'),
 );

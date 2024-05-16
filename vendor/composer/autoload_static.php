@@ -4,19 +4,19 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd751713988987e9331980363e24189ce
+class ComposerStaticInit5b8c6402903efb999233462dab451d58
 {
     public static $prefixLengthsPsr4 = array (
-        'T' => 
+        'L' => 
         array (
-            'Tanvir10\\LightCommerce\\' => 23,
+            'LightCommerce\\Admin\\' => 20,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Tanvir10\\LightCommerce\\' => 
+        'LightCommerce\\Admin\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src',
+            0 => __DIR__ . '/../..' . '/src/admin',
         ),
     );
 
@@ -27,9 +27,9 @@ class ComposerStaticInitd751713988987e9331980363e24189ce
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitd751713988987e9331980363e24189ce::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitd751713988987e9331980363e24189ce::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitd751713988987e9331980363e24189ce::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit5b8c6402903efb999233462dab451d58::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit5b8c6402903efb999233462dab451d58::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit5b8c6402903efb999233462dab451d58::$classMap;
 
         }, null, ClassLoader::class);
     }
