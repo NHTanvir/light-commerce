@@ -74,7 +74,7 @@ class Database {
 
     public function add_product($name, $price, $description = '') {
         $this->wpdb->insert(
-            $this->wpdb->prefix . '  ',
+            $this->wpdb->prefix . 'lightcommerce_product',
             [
                 'name' => $name,
                 'price' => $price,
@@ -147,6 +147,11 @@ class Database {
             ['id' => $id],
             ['%d']
         );
+    }
+
+    public function get_all_products() {
+        $table_name = $this->wpdb->prefix . 'lightcommerce_product';
+        return $this->wpdb->get_results("SELECT * FROM $table_name");
     }
 
     public function add_order($customer_name, $total_amount) {

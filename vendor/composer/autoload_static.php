@@ -9,11 +9,16 @@ class ComposerStaticInit5b8c6402903efb999233462dab451d58
     public static $prefixLengthsPsr4 = array (
         'L' => 
         array (
+            'LightCommerce\\Common\\' => 21,
             'LightCommerce\\Admin\\' => 20,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'LightCommerce\\Common\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/common',
+        ),
         'LightCommerce\\Admin\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/admin',

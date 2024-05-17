@@ -1,10 +1,11 @@
 <?php
 namespace LightCommerce\Admin;
+use LightCommerce\Common\Helpers;
 
 class Menu {
 
      public function __construct() {
-        add_action( 'admin_menu', [$this, 'register_menu_pages'] );
+        add_action('admin_menu', [$this, 'register_menu_pages']);
      }
 
     public function register_menu_pages() {
@@ -18,13 +19,21 @@ class Menu {
             'dashicons-cart'
         );
 
-        add_submenu_page(
-            'lightcommerce',
+        add_menu_page(
             __('Products', 'light-commerce'),
             __('Products', 'light-commerce'),
             'manage_options',
             'lightcommerce-products',
             [$this, 'render_products_page']
+        );
+
+        add_submenu_page(
+            'lightcommerce-products',
+            __('Add Product', 'light-commerce'),
+            __('Add Product', 'light-commerce'),
+            'manage_options',
+            'lightcommerce-add-product',
+            [$this, 'render_add_product_page']
         );
 
         add_submenu_page(
@@ -42,7 +51,11 @@ class Menu {
     }
 
     public function render_products_page() {
-        echo "products";
+        Helpers::get_template('products', [], 'admin');
+    }
+
+    public function render_add_product_page() {
+        Helpers::get_template('add-product', [], 'admin');
     }
 
     public function render_orders_page() {
