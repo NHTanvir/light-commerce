@@ -72,10 +72,9 @@ class Database {
         dbDelta($sql);
     }
 
-    // Add a new product
     public function add_product($name, $price, $description = '') {
         $this->wpdb->insert(
-            $this->wpdb->prefix . 'lightcommerce_product',
+            $this->wpdb->prefix . '  ',
             [
                 'name' => $name,
                 'price' => $price,
@@ -88,7 +87,6 @@ class Database {
         return $this->wpdb->insert_id;
     }
 
-    // Update an existing product
     public function update_product($id, $name, $price, $description = '') {
         return $this->wpdb->update(
             $this->wpdb->prefix . 'lightcommerce_product',
@@ -105,7 +103,6 @@ class Database {
         );
     }
 
-    // Delete a product
     public function delete_product($id) {
         return $this->wpdb->delete(
             $this->wpdb->prefix . 'lightcommerce_product',
@@ -114,7 +111,6 @@ class Database {
         );
     }
 
-    // Add a new product meta
     public function add_product_meta($product_id, $meta_key, $meta_value) {
         $this->wpdb->insert(
             $this->wpdb->prefix . 'lightcommerce_product_meta',
@@ -130,7 +126,6 @@ class Database {
         return $this->wpdb->insert_id;
     }
 
-    // Update an existing product meta
     public function update_product_meta($id, $meta_key, $meta_value) {
         return $this->wpdb->update(
             $this->wpdb->prefix . 'lightcommerce_product_meta',
@@ -146,7 +141,6 @@ class Database {
         );
     }
 
-    // Delete a product meta
     public function delete_product_meta($id) {
         return $this->wpdb->delete(
             $this->wpdb->prefix . 'lightcommerce_product_meta',
@@ -155,7 +149,6 @@ class Database {
         );
     }
 
-    // Add a new order
     public function add_order($customer_name, $total_amount) {
         $this->wpdb->insert(
             $this->wpdb->prefix . 'lightcommerce_order',
@@ -170,7 +163,6 @@ class Database {
         return $this->wpdb->insert_id;
     }
 
-    // Update an existing order
     public function update_order($id, $customer_name, $total_amount) {
         return $this->wpdb->update(
             $this->wpdb->prefix . 'lightcommerce_order',
@@ -186,7 +178,6 @@ class Database {
         );
     }
 
-    // Delete an order
     public function delete_order($id) {
         return $this->wpdb->delete(
             $this->wpdb->prefix . 'lightcommerce_order',
@@ -195,7 +186,6 @@ class Database {
         );
     }
 
-    // Add a new order meta
     public function add_order_meta($order_id, $meta_key, $meta_value) {
         $this->wpdb->insert(
             $this->wpdb->prefix . 'lightcommerce_order_meta',
@@ -211,7 +201,6 @@ class Database {
         return $this->wpdb->insert_id;
     }
 
-    // Update an existing order meta
     public function update_order_meta($id, $meta_key, $meta_value) {
         return $this->wpdb->update(
             $this->wpdb->prefix . 'lightcommerce_order_meta',
@@ -227,12 +216,25 @@ class Database {
         );
     }
 
-    // Delete an order meta
     public function delete_order_meta($id) {
         return $this->wpdb->delete(
             $this->wpdb->prefix . 'lightcommerce_order_meta',
             ['id' => $id],
             ['%d']
         );
+    }
+
+    public function get_product($id) {
+        return $this->wpdb->get_row($this->wpdb->prepare(
+            "SELECT * FROM {$this->wpdb->prefix}lightcommerce_product WHERE id = %d",
+            $id
+        ));
+    }
+
+    public function get_order($id) {
+        return $this->wpdb->get_row($this->wpdb->prepare(
+            "SELECT * FROM {$this->wpdb->prefix}lightcommerce_order WHERE id = %d",
+            $id
+        ));
     }
 }

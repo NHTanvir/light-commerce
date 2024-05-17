@@ -1,9 +1,14 @@
 <?php
-namespace LightCommerce;
+
+namespace LightCommerce\Common\Classes;
 
 use LightCommerce\Admin\Database;
+use LightCommerce\Common\Interfaces\CommerceItemInterface;
+use LightCommerce\Common\Traits\OrderTrait;
 
-class Order {
+class Order implements CommerceItemInterface {
+    use OrderTrait;
+
     private $id;
     private $customer_name;
     private $total_amount;
@@ -18,9 +23,7 @@ class Order {
     }
 
     private function load_order($id) {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'lightcommerce_order';
-        $order = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $id));
+        $order = $this->db->get_order($id);
 
         if ($order) {
             $this->customer_name = $order->customer_name;
@@ -32,35 +35,43 @@ class Order {
         return $this->id;
     }
 
-    public function get_customer_name() {
+    public function get_name() {
         return $this->customer_name;
     }
 
-    public function get_total_amount() {
+    public function get_price() {
         return $this->total_amount;
     }
-
-    public function set_customer_name($customer_name) {
+    public function set_name($customer_name) {
+        $this->validate_order_data($customer_name, $this->total_amount);
         $this->customer_name = $customer_name;
     }
 
-    public function set_total_amount($total_amount) {
+    public function set_price($total_amount) {
+        $this->validate_order_data($this->customer_name, $total_amount);
         $this->total_amount = $total_amount;
     }
 
     public function add_order($customer_name, $total_amount) {
+        $this->validate_order_data($customer_name, $total_amount);
         $this->id = $this->db->add_order($customer_name, $total_amount);
         if ($this->id) {
             $this->customer_name = $customer_name;
             $this->total_amount = $total_amount;
+            $this->log_action("Added new order with ID: $this->id");
             return $this->id;
         }
         return false;
     }
 
     public function update_order() {
+        $this->validate_order_data($this->customer_name, $this->total_amount); // Using the trait's validation
         if ($this->id) {
-            return $this->db->update_order($this->id, $this->customer_name, $this->total_amount);
+            $result = $this->db->update_order($this->id, $this->customer_name, $this->total_amount);
+            if ($result) {
+                $this->log_action("Updated order with ID: $this->id"); // Using the trait's logging
+            }
+            return $result;
         }
         return false;
     }
@@ -69,6 +80,7 @@ class Order {
         if ($this->id) {
             $result = $this->db->delete_order($this->id);
             if ($result) {
+                $this->log_action("Deleted order with ID: $this->id"); 
                 $this->id = null;
                 $this->customer_name = null;
                 $this->total_amount = null;
@@ -76,5 +88,9 @@ class Order {
             }
         }
         return false;
+    }
+
+    public function get_formatted_order_details() {
+        return $this->format_order_details(); 
     }
 }
