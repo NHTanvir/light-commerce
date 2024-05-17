@@ -2,7 +2,8 @@
     "autoload": {
         "psr-4": {
             "LightCommerce\\Admin\\": ["src/admin", "src/common/database"],
-            "LightCommerce\\Common\\": ["src/common"]
+            "LightCommerce\\Common\\": ["src/common"],
+            "LightCommerce\\Front\\": ["src/front"]
         }
     }
 }

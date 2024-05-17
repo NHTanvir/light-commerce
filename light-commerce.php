@@ -20,7 +20,8 @@ require_once(dirname(__FILE__) . '/vendor/autoload.php');
 class ClassLoader{
     public function __construct() {
         new Admin\Menu();
-        $db = new Admin\Database();
+        new Admin\Database();
+        new Front\Shortcode();
     }
 }
 new ClassLoader;
