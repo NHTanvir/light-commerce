@@ -6,7 +6,8 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'LightCommerce\\Front\\' => array($baseDir . '/src/front'),
-    'LightCommerce\\Common\\' => array($baseDir . '/src/common'),
-    'LightCommerce\\Admin\\' => array($baseDir . '/src/admin', $baseDir . '/src/common/database'),
+    'LightCommerce\\Front\\' => array($baseDir . '/src/Front'),
+    'LightCommerce\\Common\\Traits\\' => array($baseDir . '/src/Common/Traits'),
+    'LightCommerce\\Common\\' => array($baseDir . '/src/Common'),
+    'LightCommerce\\Admin\\' => array($baseDir . '/src/Admin', $baseDir . '/src/Common/Database'),
 );

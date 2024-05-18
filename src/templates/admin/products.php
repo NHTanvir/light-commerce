@@ -4,6 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 use LightCommerce\Admin\Database;
+use LightCommerce\Common\Classes\Product;
 
 $db = new Database();
 
@@ -24,7 +25,9 @@ $products = $db->get_all_products();
         </thead>
         <tbody>
             <?php if ($products) : ?>
-                <?php foreach ($products as $product) : ?>
+                <?php foreach ($products as $product) : 
+                    $product_obj = new Product( $product->id );
+                ?>
                     <tr>
                         <td><?php echo esc_html($product->id); ?></td>
                         <td><?php echo esc_html($product->name); ?></td>

@@ -21,8 +21,8 @@ class ClassLoader{
     public function __construct() {
         new Admin\Menu();
         new Admin\Database();
-        new Front\Shortcode();
         new Front\Shop();
+        new Front\Shortcode();
         new Front\Cart();
         new Front\Checkout();
     }

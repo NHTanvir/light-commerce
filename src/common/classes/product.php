@@ -1,5 +1,4 @@
 <?php
-
 namespace LightCommerce\Common\Classes;
 
 use LightCommerce\Admin\Database;
@@ -54,7 +53,6 @@ class Product implements CommerceItemInterface {
     }
 
     public function save() {
-
         $this->validate_product_data($this->name, $this->price);
 
         if ($this->id) {
@@ -84,12 +82,9 @@ class Product implements CommerceItemInterface {
     }
 
     public function update($name, $price, $description = null) {
-
         $this->validate_product_data($name, $price);
 
         $this->db->update_product($this->id, $name, $price, $description);
-
-
         $this->log_action("Product {$this->id} updated.");
 
         $this->name = $name;

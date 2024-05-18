@@ -10,6 +10,7 @@ class ComposerStaticInit5b8c6402903efb999233462dab451d58
         'L' => 
         array (
             'LightCommerce\\Front\\' => 20,
+            'LightCommerce\\Common\\Traits\\' => 28,
             'LightCommerce\\Common\\' => 21,
             'LightCommerce\\Admin\\' => 20,
         ),
@@ -18,16 +19,20 @@ class ComposerStaticInit5b8c6402903efb999233462dab451d58
     public static $prefixDirsPsr4 = array (
         'LightCommerce\\Front\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/front',
+            0 => __DIR__ . '/../..' . '/src/Front',
+        ),
+        'LightCommerce\\Common\\Traits\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/Common/Traits',
         ),
         'LightCommerce\\Common\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/common',
+            0 => __DIR__ . '/../..' . '/src/Common',
         ),
         'LightCommerce\\Admin\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/admin',
-            1 => __DIR__ . '/../..' . '/src/common/database',
+            0 => __DIR__ . '/../..' . '/src/Admin',
+            1 => __DIR__ . '/../..' . '/src/Common/Database',
         ),
     );
 

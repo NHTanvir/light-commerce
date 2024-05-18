@@ -1,1 +1,77 @@
-front.css
+/* Styles for the product grid */
+.lightcommerce-products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px; 
+}
+
+.lightcommerce-product {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+
+.add-to-cart-btn {
+    background-color: #007bff;
+    color: #fff; 
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #0056b3; 
+}
+
+
+.lightcommerce-product a.button {
+    background-color: #007bff; 
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+}
+
+.lightcommerce-product a.button:hover {
+    background-color: #218838;
+}
+
+.lightcommerce-single-product {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.lightcommerce-single-product h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.lightcommerce-single-product p {
+    margin-bottom: 15px;
+}
+
+.lightcommerce-single-product a.button {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.lightcommerce-single-product a.button:hover {
+    background-color: #0056b3;
+}
+
