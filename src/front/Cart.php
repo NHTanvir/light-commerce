@@ -79,5 +79,13 @@ class Cart {
             exit;
         }
     }
+
+    public function clear_cart() {
+        $cart_items = $this->get_cart_items();
+        foreach ($cart_items as $item) {
+            $this->remove_from_cart($item->product_id);
+        }
+    }
+
 }
 ?>

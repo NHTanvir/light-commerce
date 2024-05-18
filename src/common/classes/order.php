@@ -11,8 +11,13 @@ class Order implements CommerceItemInterface {
 
     private $id;
     private $customer_name;
+    private $customer_address;
+    private $customer_email;
+    private $payment_method;
     private $total_amount;
+    private $status;
     private $db;
+
 
     public function __construct($id = null) {
         $this->db = new Database();
@@ -27,7 +32,11 @@ class Order implements CommerceItemInterface {
 
         if ($order) {
             $this->customer_name = $order->customer_name;
+            $this->customer_address = $order->customer_address;
+            $this->customer_email = $order->customer_email;
+            $this->payment_method = $order->payment_method;
             $this->total_amount = $order->total_amount;
+            $this->status = $order->status;
         }
     }
 
@@ -52,12 +61,16 @@ class Order implements CommerceItemInterface {
         $this->total_amount = $total_amount;
     }
 
-    public function add_order($customer_name, $total_amount) {
+    public function add_order($customer_name, $customer_address, $customer_email, $payment_method, $total_amount, $status) {
         $this->validate_order_data($customer_name, $total_amount);
-        $this->id = $this->db->add_order($customer_name, $total_amount);
+        $this->id = $this->db->add_order($customer_name, $customer_address, $customer_email, $payment_method, $total_amount, $status);
         if ($this->id) {
             $this->customer_name = $customer_name;
+            $this->customer_address = $customer_address;
+            $this->customer_email = $customer_email;
+            $this->payment_method = $payment_method;
             $this->total_amount = $total_amount;
+            $this->status = $status;
             $this->log_action("Added new order with ID: $this->id");
             return $this->id;
         }
@@ -65,17 +78,17 @@ class Order implements CommerceItemInterface {
     }
 
     public function update_order() {
-        $this->validate_order_data($this->customer_name, $this->total_amount); // Using the trait's validation
+        $this->validate_order_data($this->customer_name, $this->total_amount);
         if ($this->id) {
-            $result = $this->db->update_order($this->id, $this->customer_name, $this->total_amount);
+            $result = $this->db->update_order($this->id, $this->customer_name, $this->customer_address, $this->customer_email, $this->payment_method, $this->total_amount, $this->status);
             if ($result) {
-                $this->log_action("Updated order with ID: $this->id"); // Using the trait's logging
+                $this->log_action("Updated order with ID: $this->id");
             }
             return $result;
         }
         return false;
     }
-
+    
     public function delete_order() {
         if ($this->id) {
             $result = $this->db->delete_order($this->id);

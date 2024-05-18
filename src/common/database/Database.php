@@ -51,7 +51,11 @@ class Database {
         $sql = "CREATE TABLE IF NOT EXISTS $table_name (
             id INT AUTO_INCREMENT PRIMARY KEY,
             customer_name VARCHAR(255) NOT NULL,
+            customer_address TEXT NOT NULL,
+            customer_email VARCHAR(255) NOT NULL,
+            payment_method VARCHAR(50) NOT NULL,
             total_amount DECIMAL(10, 2) NOT NULL,
+            status VARCHAR(50) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )";
 
@@ -171,30 +175,38 @@ class Database {
         return $this->wpdb->get_results("SELECT * FROM $table_name");
     }
 
-    public function add_order($customer_name, $total_amount) {
+    public function add_order($customer_name, $customer_address, $customer_email, $payment_method, $total_amount, $status) {
         $this->wpdb->insert(
             $this->wpdb->prefix . 'lightcommerce_order',
             [
                 'customer_name' => $customer_name,
-                'total_amount' => $total_amount
+                'customer_address' => $customer_address,
+                'customer_email' => $customer_email,
+                'payment_method' => $payment_method,
+                'total_amount' => $total_amount,
+                'status' => $status
             ],
             [
-                '%s', '%f'
+                '%s', '%s', '%s', '%s', '%f', '%s'
             ]
         );
         return $this->wpdb->insert_id;
     }
 
-    public function update_order($id, $customer_name, $total_amount) {
+    public function update_order($id, $customer_name, $customer_address, $customer_email, $payment_method, $total_amount, $status) {
         return $this->wpdb->update(
             $this->wpdb->prefix . 'lightcommerce_order',
             [
                 'customer_name' => $customer_name,
-                'total_amount' => $total_amount
+                'customer_address' => $customer_address,
+                'customer_email' => $customer_email,
+                'payment_method' => $payment_method,
+                'total_amount' => $total_amount,
+                'status' => $status
             ],
             ['id' => $id],
             [
-                '%s', '%f'
+                '%s', '%s', '%s', '%s', '%f', '%s'
             ],
             ['%d']
         );

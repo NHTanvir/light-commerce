@@ -14,6 +14,7 @@ class Shortcode {
         add_shortcode('lightcommerce_shop', [$this, 'render_shop']);
         add_action('template_redirect', [$this, 'handle_single_product_page']);
         add_shortcode('lightcommerce_cart', [$this,'lightcommerce_cart_shortcode']);
+        add_shortcode('lightcommerce_checkout', [$this, 'render_checkout']);
     }
 
     public function render_shop() {
@@ -59,7 +60,7 @@ class Shortcode {
             }
         }
     }
-    
+
     public function lightcommerce_cart_shortcode() {
         ob_start();
     
@@ -84,5 +85,27 @@ class Shortcode {
     
         return ob_get_clean();
     }
+
+    public function render_checkout() {
+        ob_start();
+        ?>
+        <form id="lightcommerce-checkout-form">
+            <label for="customer_name"><?php _e('Name:', 'light-commerce'); ?></label>
+            <input type="text" id="customer_name" name="customer_name" required>
+            <br>
+            
+            <label for="customer_address"><?php _e('Address:', 'light-commerce'); ?></label>
+            <textarea id="customer_address" name="customer_address" required></textarea>
+            <br>
+            <label for="customer_email"><?php _e('Email:', 'light-commerce'); ?></label>
+            <input type="email" id="customer_email" name="customer_email" required>
+            <br>            
+            <button type="submit"><?php _e('Place Order', 'light-commerce'); ?></button>
+        </form>
+        <div id="checkout-message"></div>
+        <?php
+        return ob_get_clean();
+    }
+    
     
 }

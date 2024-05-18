@@ -24,6 +24,7 @@ class ClassLoader{
         new Front\Shortcode();
         new Front\Shop();
         new Front\Cart();
+        new Front\Checkout();
     }
 }
 new ClassLoader;

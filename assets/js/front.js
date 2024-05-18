@@ -43,5 +43,22 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
+    $('#lightcommerce-checkout-form').on('submit', function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        
+        $.ajax({
+            url: '/wp-json/lightcommerce/v1/place_order',
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                $('#checkout-message').html('<p>' + response.message + '</p>');
+            },
+            error: function(response) {
+                $('#checkout-message').html('<p>' + response.responseJSON.message + '</p>');
+            }
+        });
+    });
 });
 
