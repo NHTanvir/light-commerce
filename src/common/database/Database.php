@@ -250,6 +250,12 @@ class Database {
         );
     }
 
+    public function get_all_orders() {
+        $table_name = $this->wpdb->prefix . 'lightcommerce_order';
+        return $this->wpdb->get_results("SELECT * FROM $table_name");
+    }
+    
+
     public function delete_order_meta($id) {
         return $this->wpdb->delete(
             $this->wpdb->prefix . 'lightcommerce_order_meta',
