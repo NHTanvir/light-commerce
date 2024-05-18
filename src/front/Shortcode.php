@@ -13,6 +13,7 @@ class Shortcode {
     public function __construct() {
         add_shortcode('lightcommerce_shop', [$this, 'render_shop']);
         add_action('template_redirect', [$this, 'handle_single_product_page']);
+        add_shortcode('lightcommerce_cart', [$this,'lightcommerce_cart_shortcode']);
     }
 
     public function render_shop() {
@@ -57,5 +58,30 @@ class Shortcode {
                 exit;
             }
         }
+    }
+
+    function lightcommerce_cart_shortcode() {
+        ob_start();
+        
+        $cart = new Cart();
+        $items = $cart->get_cart_items();
+        
+        if ($items) {
+            echo '<div class="lightcommerce-cart">';
+            foreach ($items as $item) {
+                $product = (new Database())->get_product($item->product_id);
+                echo '<div class="lightcommerce-cart-item">';
+                echo '<h2>' . esc_html($product->name) . '</h2>';
+                echo '<p>' . __('Quantity: ', 'light-commerce') . esc_html($item->quantity) . '</p>';
+                echo '<p>' . __('Price: ', 'light-commerce') . esc_html($product->price * $item->quantity) . '</p>';
+                echo '<a href="' . get_permalink(get_the_ID()) . '?remove_from_cart=' . esc_attr($item->product_id) . '" class="button">' . __('Remove from Cart', 'light-commerce') . '</a>';
+                echo '</div>';
+            }
+            echo '</div>';
+        } else {
+            echo '<p>' . __('Your cart is empty.', 'light-commerce') . '</p>';
+        }
+        
+        return ob_get_clean();
     }
 }

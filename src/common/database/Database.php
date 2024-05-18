@@ -15,6 +15,7 @@ class Database {
         $this->create_product_meta_table();
         $this->create_order_table();
         $this->create_order_meta_table();
+        $this->create_cart_table();
     }
 
     private function create_product_table() {
@@ -71,6 +72,22 @@ class Database {
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
     }
+
+    private function create_cart_table() {
+        $table_name = $this->wpdb->prefix . 'lightcommerce_cart';
+        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            session_id VARCHAR(255) NOT NULL,
+            product_id INT NOT NULL,
+            quantity INT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (product_id) REFERENCES {$this->wpdb->prefix}lightcommerce_product(id)
+        )";
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
+
 
     public function add_product($name, $price, $description = '') {
         $this->wpdb->insert(
@@ -241,5 +258,34 @@ class Database {
             "SELECT * FROM {$this->wpdb->prefix}lightcommerce_order WHERE id = %d",
             $id
         ));
+    }
+
+    public function get_cart_items($session_id) {
+        $table_name = $this->wpdb->prefix . 'lightcommerce_cart';
+        $sql = $this->wpdb->prepare("SELECT * FROM $table_name WHERE session_id = %s", $session_id);
+        return $this->wpdb->get_results($sql);
+    }
+
+    public function add_to_cart($session_id, $product_id, $quantity = 1) {
+        $table_name = $this->wpdb->prefix . 'lightcommerce_cart';
+        $existing_item = $this->wpdb->get_row($this->wpdb->prepare(
+            "SELECT * FROM $table_name WHERE session_id = %s AND product_id = %d", $session_id, $product_id
+        ));
+
+        if ($existing_item) {
+            $new_quantity = $existing_item->quantity + $quantity;
+            $this->wpdb->update($table_name, ['quantity' => $new_quantity], ['id' => $existing_item->id]);
+        } else {
+            $this->wpdb->insert($table_name, [
+                'session_id' => $session_id,
+                'product_id' => $product_id,
+                'quantity' => $quantity
+            ]);
+        }
+    }
+
+    public function remove_from_cart($session_id, $product_id) {
+        $table_name = $this->wpdb->prefix . 'lightcommerce_cart';
+        $this->wpdb->delete($table_name, ['session_id' => $session_id, 'product_id' => $product_id]);
     }
 }
