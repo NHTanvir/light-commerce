@@ -32,6 +32,7 @@ class Shortcode {
                 echo '<p>' . __('Price: ', 'light-commerce') . esc_html($product->price) . '</p>';
                 echo '<button class="add-to-cart-btn" data-product-id="' . esc_attr($product->id) . '">' . __('Add to Cart', 'light-commerce') . '</button>';
                 echo '<a href="' . get_permalink(get_the_ID()) . '?product_id=' . esc_attr($product->id) . '" class="button">' . __('View Product', 'light-commerce') . '</a>';
+                echo "<p class='success-message'></p>";
                 echo '</div>';
             }
             echo '</div>';

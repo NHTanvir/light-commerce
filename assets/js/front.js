@@ -3,6 +3,7 @@ jQuery(document).ready(function($) {
         e.preventDefault();
         var product_id = $(this).data('product-id');
         var quantity = 1; // You can adjust this as needed
+        var $successMessage = $(this).siblings('.success-message');
 
         $.ajax({
             url: '/wp-json/lightcommerce/v1/add-to-cart/',
@@ -12,8 +13,8 @@ jQuery(document).ready(function($) {
                 quantity: quantity
             },
             success: function(response) {
-                // Handle success, e.g., show a success message
-                console.log('Product added to cart successfully');
+                $successMessage.html('Product added to cart successfully');
+
             },
             error: function(xhr, status, error) {
                 // Handle error, e.g., display an error message
@@ -61,4 +62,3 @@ jQuery(document).ready(function($) {
         });
     });
 });
-

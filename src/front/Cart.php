@@ -52,6 +52,18 @@ class Cart {
         return array('success' => true);
     }
 
+    public function lightcommerce_remove_from_cart_endpoint(WP_REST_Request $request) {
+        $product_id = $request->get_param('product_id');
+    
+        if (empty($product_id)) {
+            return new WP_Error('invalid_params', 'Product ID is required.', array('status' => 400));
+        }
+    
+        $this->remove_from_cart($product_id);
+    
+        return array('success' => true);
+    }
+
     public function get_cart_items() {
         return $this->db->get_cart_items($this->session_id);
     }
