@@ -327,4 +327,10 @@ class Database {
         $table_name = $this->wpdb->prefix . 'lightcommerce_cart';
         $this->wpdb->delete($table_name, ['session_id' => $session_id, 'product_id' => $product_id]);
     }
+
+    public function page_exists_by_title($title) {
+        global $wpdb;
+        $page_id = $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE post_title = %s AND post_type = 'page'", $title));
+        return $page_id ? true : false;
+    }
 }

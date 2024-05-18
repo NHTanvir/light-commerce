@@ -30,20 +30,40 @@ class ClassLoader{
 
     public function initialize_dummy_products() {
 
-        if(  get_option( 'lightcommerce_dummy_products_initialized' ) ) return;
+        if(  get_option( 'lightcommerce_initial_seeding_done' ) ) return;
 
+
+        $page_shortcodes = [
+            'L-Shop'      => '[lightcommerce_shop]',
+            'L-Cart'      => '[lightcommerce_cart]',
+            'L-Checkout'  => '[lightcommerce_checkout]',
+        ];
+        
+ 
         $db = new Admin\Database();
-        $dummy_products = array(
-            array('name' => 'Product 1', 'price' => 10.99, 'description' => 'Description for Product 1'),
-            array('name' => 'Product 2', 'price' => 19.99, 'description' => 'Description for Product 2'),
+        
+        foreach ($page_shortcodes as $page_title => $shortcode) {
+            if (!$db->page_exists_by_title($page_title)) {
+                wp_insert_post([
+                    'post_title'    => $page_title,
+                    'post_content'  => $shortcode,
+                    'post_status'   => 'publish',
+                    'post_type'     => 'page',
+                ]);
+            }
+        }
 
-        );
+        $dummy_products = [
+            ['name' => 'Product 1', 'price' => 10.99, 'description' => 'Description for Product 1'],
+            ['name' => 'Product 2', 'price' => 19.99, 'description' => 'Description for Product 2'],
+
+        ];
 
         foreach ($dummy_products as $product) {
             $db->add_product( $product['name'], $product['price'] , $product['description'] );
         }
-        
-        update_option( 'lightcommerce_dummy_products_initialized', true );
+
+        update_option( 'lightcommerce_initial_seeding_done', true );
 
     }
 }
