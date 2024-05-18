@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Stripe\\' => array($vendorDir . '/stripe/stripe-php/lib'),
     'LightCommerce\\Front\\' => array($baseDir . '/src/Front'),
     'LightCommerce\\Common\\Traits\\' => array($baseDir . '/src/Common/Traits'),
     'LightCommerce\\Common\\' => array($baseDir . '/src/Common'),

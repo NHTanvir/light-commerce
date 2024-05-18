@@ -14,9 +14,6 @@ trait OrderTrait {
         if (empty($customer_name)) {
             throw new \Exception("Customer name cannot be empty");
         }
-        if ($total_amount <= 0) {
-            throw new \Exception("Total amount must be greater than zero");
-        }
         return true;
     }
 

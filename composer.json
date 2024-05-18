@@ -6,5 +6,8 @@
             "LightCommerce\\Common\\": ["src/Common"],
             "LightCommerce\\Front\\": ["src/Front"]
         }
+    },
+    "require": {
+        "stripe/stripe-php": "^14.7"
     }
 }
