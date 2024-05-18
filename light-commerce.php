@@ -22,6 +22,7 @@ class ClassLoader{
         new Admin\Menu();
         new Admin\Database();
         new Front\Shortcode();
+        new Front\Shop();
         new Front\Cart();
     }
 }

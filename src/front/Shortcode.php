@@ -29,7 +29,7 @@ class Shortcode {
                 echo '<h2>' . esc_html($product->name) . '</h2>';
                 echo '<p>' . esc_html($product->description) . '</p>';
                 echo '<p>' . __('Price: ', 'light-commerce') . esc_html($product->price) . '</p>';
-                echo '<a href="' . get_permalink(get_the_ID()) . '?add_to_cart=' . esc_attr($product->id) . '" class="button">' . __('Add to Cart', 'light-commerce') . '</a>';
+                echo '<button class="add-to-cart-btn" data-product-id="' . esc_attr($product->id) . '">' . __('Add to Cart', 'light-commerce') . '</button>';
                 echo '<a href="' . get_permalink(get_the_ID()) . '?product_id=' . esc_attr($product->id) . '" class="button">' . __('View Product', 'light-commerce') . '</a>';
                 echo '</div>';
             }
@@ -59,29 +59,30 @@ class Shortcode {
             }
         }
     }
-
-    function lightcommerce_cart_shortcode() {
+    
+    public function lightcommerce_cart_shortcode() {
         ob_start();
-        
+    
         $cart = new Cart();
         $items = $cart->get_cart_items();
-        
+    
         if ($items) {
             echo '<div class="lightcommerce-cart">';
             foreach ($items as $item) {
                 $product = (new Database())->get_product($item->product_id);
-                echo '<div class="lightcommerce-cart-item">';
+                echo '<div class="lightcommerce-cart-item" data-product-id="' . esc_attr($product->id) . '">';
                 echo '<h2>' . esc_html($product->name) . '</h2>';
                 echo '<p>' . __('Quantity: ', 'light-commerce') . esc_html($item->quantity) . '</p>';
                 echo '<p>' . __('Price: ', 'light-commerce') . esc_html($product->price * $item->quantity) . '</p>';
-                echo '<a href="' . get_permalink(get_the_ID()) . '?remove_from_cart=' . esc_attr($item->product_id) . '" class="button">' . __('Remove from Cart', 'light-commerce') . '</a>';
+                echo '<button class="remove-from-cart-btn" data-product-id="' . esc_attr($product->id) . '">' . __('Remove from Cart', 'light-commerce') . '</button>';
                 echo '</div>';
             }
             echo '</div>';
         } else {
             echo '<p>' . __('Your cart is empty.', 'light-commerce') . '</p>';
         }
-        
+    
         return ob_get_clean();
     }
+    
 }
