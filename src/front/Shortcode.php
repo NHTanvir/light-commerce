@@ -5,6 +5,7 @@ namespace LightCommerce\Front;
 use LightCommerce\Admin\Database;
 use LightCommerce\Common\Classes\Order;
 use Exception;
+use LightCommerce\Common\Helpers;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -22,6 +23,41 @@ class Shortcode {
         add_shortcode('lightcommerce_cart', [$this,'lightcommerce_cart_shortcode']);
         add_shortcode('lightcommerce_checkout', [$this, 'render_checkout']);
         add_action('rest_api_init', [$this, 'register_custom_routes']);
+        add_filter('post_type_link', [$this, 'custom_product_permalink'], 10, 2);
+        add_action('init', [$this, 'custom_rewrite_rules']);
+        add_filter('query_vars', [$this, 'custom_query_vars']);
+        add_filter('template_include', [$this, 'custom_product_template']);
+    }
+
+    public function custom_product_permalink($permalink, $post) {
+        // Check if it's a product post type
+        if ($post->post_type === 'product') {
+            $product_name = sanitize_title($post->post_title); // Get the sanitized product name
+            $permalink = home_url('/shop/' . $product_name); // Construct the permalink
+        }
+        return $permalink;
+    }
+
+    public function custom_rewrite_rules() {
+        add_rewrite_rule('^shop/([^/]+)/?', 'index.php?product=$matches[1]', 'top');
+    }
+    
+    public function custom_query_vars($vars) {
+        $vars[] = 'product';
+        return $vars;
+    }
+
+    public function custom_product_template($template) {
+        global $wp_query;
+        $product_slug = $wp_query->get('product');
+        if ($product_slug) {
+
+            $new_template = Helpers::get_template('product', [], 'front');
+            if (!empty($new_template)) {
+                return $new_template;
+            }
+        }
+        return $template;
     }
     
     public function register_custom_routes() {
@@ -77,12 +113,7 @@ class Shortcode {
             $product = $db->get_product($product_id);
             
             if ($product) {
-                echo '<div class="lightcommerce-single-product">';
-                echo '<h1>' . esc_html($product->name) . '</h1>';
-                echo '<p>' . esc_html($product->description) . '</p>';
-                echo '<p>' . __('Price: ', 'light-commerce') . esc_html($product->price) . '</p>';
-                echo '<a href="' . get_permalink(get_the_ID()) . '?add_to_cart=' . esc_attr($product->id) . '" class="button">' . __('Add to Cart', 'light-commerce') . '</a>';
-                echo '</div>';
+                include(Helpers::get_template('product', [], 'front'));
                 exit;
             }
         }
