@@ -172,18 +172,8 @@ class Database {
     }
 
     public function get_all_products() {
-        $cache_key = 'lightcommerce_all_products';
-        $products = get_transient($cache_key);
-
-        if (false === $products) {
-
-            $table_name = $this->wpdb->prefix . 'lightcommerce_product';
-            $products = $this->wpdb->get_results("SELECT * FROM $table_name");
-
-            set_transient($cache_key, $products, $this->cache_duration);
-        }
-
-        return $products;
+        $table_name = $this->wpdb->prefix . 'lightcommerce_product';
+        return  $products = $this->wpdb->get_results("SELECT * FROM $table_name");
     }
 
     public function add_order($customer_name, $customer_address, $customer_email, $payment_method, $total_amount, $status) {
@@ -262,19 +252,8 @@ class Database {
     }
 
     public function get_all_orders() {
-        $cache_key = 'lightcommerce_all_orders';
-        $orders = get_transient($cache_key);
-
-        if (false === $orders) {
-            // If not found in cache, fetch from the database
-            $table_name = $this->wpdb->prefix . 'lightcommerce_order';
-            $orders = $this->wpdb->get_results("SELECT * FROM $table_name");
-
-            // Store fetched data in cache
-            set_transient($cache_key, $orders, $this->cache_duration);
-        }
-
-        return $orders;
+        $table_name = $this->wpdb->prefix . 'lightcommerce_order';
+        return $orders = $this->wpdb->get_results("SELECT * FROM $table_name");
     }
 
     public function delete_order_meta($id) {

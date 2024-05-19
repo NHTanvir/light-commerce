@@ -32,6 +32,14 @@ class Shortcode {
     }
 
     public function render_shop() {
+        $transient_key = 'lightcommerce_shop_cache'; 
+
+        $cached_output = get_transient($transient_key);
+    
+        if ($cached_output !== false) {
+            return $cached_output;
+        }
+    
         ob_start();
         
         $db = new Database();
@@ -53,9 +61,13 @@ class Shortcode {
         } else {
             echo '<p>' . __('No products found.', 'light-commerce') . '</p>';
         }
-        
-        return ob_get_clean();
+    
+        $output = ob_get_clean();
+        set_transient($transient_key, $output, MINUTE_IN_SECONDS); 
+    
+        return $output;
     }
+    
 
     public function handle_single_product_page() {
         if (isset($_GET['product_id'])) {
