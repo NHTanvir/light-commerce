@@ -45,20 +45,81 @@ jQuery(document).ready(function($) {
         });
     });
 
+    $('input[name="payment_method"]').on('change', function() {
+        if ($(this).val() === 'stripe') {
+            $('#stripe-card-element').show();
+        } else {
+            $('#stripe-card-element').hide();
+        }
+    });
+
+
     $('#lightcommerce-checkout-form').on('submit', function(e) {
         e.preventDefault();
-        var formData = $(this).serialize();
         
-        $.ajax({
-            url: '/wp-json/lightcommerce/v1/place_order',
-            method: 'POST',
-            data: formData,
-            success: function(response) {
-                $('#checkout-message').html('<p>' + response.message + '</p>');
-            },
-            error: function(response) {
-                $('#checkout-message').html('<p>' + response.responseJSON.message + '</p>');
-            }
-        });
+        // Check if COD is selected
+        if ($('input[name="payment_method"]:checked').val() === 'cod') {
+            var formData = $(this).serialize();
+            
+            $.ajax({
+                url: lightcommerce_vars.place_order_url,
+                method: 'POST',
+                data: formData,
+                success: function(response) {
+                    $('#checkout-message').html('<p>' + response.message + '</p>');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 3000);
+                },
+                error: function(response) {
+                    $('#checkout-message').html('<p>' + response.responseJSON.message + '</p>');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 3000);
+                }
+            });
+        } else {
+            // Handle Stripe payment
+            stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement,
+                billing_details: {
+                    name: $('#customer_name').val(),
+                    email: $('#customer_email').val(),
+                    address: {
+                        line1: $('#customer_address').val()
+                    }
+                }
+            }).then(function(result) {
+                if (result.error) {
+                    // Handle errors
+                    $('#checkout-message').html('<p>' + result.error.message + '</p>');
+                } else {
+                    // Send payment method id to server to create payment intent
+                    fetch(lightcommerce_vars.create_payment_intent_url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({payment_method_id: result.paymentMethod.id, customer_name: $('#customer_name').val(), customer_address: $('#customer_address').val(), customer_email: $('#customer_email').val(), payment_method: $('input[name="payment_method"]:checked').val()})
+                    }).then(function(response) {
+                        return response.json();
+                    }).then(function(data) {
+                        // Handle server response
+                        if (data.success) {
+                            // Payment successful
+                            $('#checkout-message').html('<p>Payment successful!</p>');
+                        } else {
+                            // Payment failed
+                            $('#checkout-message').html('<p>Payment failed!</p>');
+                        }
+                        setTimeout(function() {
+                            location.reload();
+                        }, 3000);
+                    });
+                }
+            });
+        }
     });
+      
 });

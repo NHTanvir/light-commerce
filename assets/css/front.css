@@ -42,36 +42,83 @@
     background-color: #218838;
 }
 
-.lightcommerce-single-product {
+/* General form styles */
+#lightcommerce-checkout-form {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    background-color: #f9f9f9;
 }
 
-.lightcommerce-single-product h1 {
-    font-size: 24px;
-    margin-bottom: 10px;
+#lightcommerce-checkout-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
 }
 
-.lightcommerce-single-product p {
-    margin-bottom: 15px;
+#lightcommerce-checkout-form input,
+#lightcommerce-checkout-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
 }
 
-.lightcommerce-single-product a.button {
-    display: inline-block;
-    text-decoration: none;
-    background-color: #007bff;
-    color: #fff;
+#lightcommerce-checkout-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
-.lightcommerce-single-product a.button:hover {
-    background-color: #0056b3;
+#lightcommerce-checkout-form button:hover {
+    background-color: #218838;
 }
+
+/* Payment method styles */
+.payment-method {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.payment-method input[type="radio"] {
+    margin-right: 10px;
+}
+
+.payment-method label {
+    margin: 0;
+    font-weight: normal;
+}
+
+/* Stripe card element styles */
+#stripe-card-element {
+    margin-bottom: 20px;
+}
+
+#card-element {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #fff;
+}
+
+/* Error messages */
+#error-message {
+    color: #ff0000;
+    margin-top: 12px;
+}
+
+#checkout-message {
+    margin-top: 20px;
+}
+
 

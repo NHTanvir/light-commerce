@@ -3,6 +3,7 @@
 namespace LightCommerce\Front;
 
 use LightCommerce\Admin\Database;
+use LightCommerce\Common\Classes\Order;
 use Exception;
 
 if (!defined('ABSPATH')) {
@@ -10,8 +11,12 @@ if (!defined('ABSPATH')) {
 }
 
 class Shortcode {
+
+    private $db;
     
     public function __construct() {
+        $this->db = new Database();
+
         add_shortcode('lightcommerce_shop', [$this, 'render_shop']);
         add_action('template_redirect', [$this, 'handle_single_product_page']);
         add_shortcode('lightcommerce_cart', [$this,'lightcommerce_cart_shortcode']);
@@ -97,99 +102,102 @@ class Shortcode {
     }
 
     public function render_checkout() {
+        $cart = new Cart();
+        $items = $cart->get_cart_items();
+        if (!$items) {
+            echo '<p>' . __('Your cart is empty.', 'light-commerce') . '</p>';
+            return;
+        }
         ob_start();
         ?>
         <form id="lightcommerce-checkout-form">
             <label for="customer_name"><?php _e('Name:', 'light-commerce'); ?></label>
             <input type="text" id="customer_name" name="customer_name" required>
             <br>
-            
+    
             <label for="customer_address"><?php _e('Address:', 'light-commerce'); ?></label>
             <textarea id="customer_address" name="customer_address" required></textarea>
             <br>
-            
+    
             <label for="customer_email"><?php _e('Email:', 'light-commerce'); ?></label>
             <input type="email" id="customer_email" name="customer_email" required>
             <br>
-            
-            <!-- Stripe Card Element -->
-            <div id="card-element"></div>
-            
+    
+            <label><?php _e('Payment Method:', 'light-commerce'); ?></label>
+            <input type="radio" name="payment_method" value="cod" required> <?php _e('Cash on Delivery', 'light-commerce'); ?>
+            <input type="radio" name="payment_method" value="stripe" required> <?php _e('Credit Card', 'light-commerce'); ?>
+            <br>
+    
+            <div id="stripe-card-element" style="display: none;">
+                <div id="card-element"></div>
+            </div>
+    
             <button type="submit" id="submit-payment"><?php _e('Place Order', 'light-commerce'); ?></button>
+            <div id="checkout-message"></div>
         </form>
-        <div id="checkout-message"></div>
+    
         <script src="https://js.stripe.com/v3/"></script>
         <script>
-            var stripe = Stripe('pk_test_51Mw6NZH6GMgUDrK88BkuCNeA3PHjkESL752Oe9KSK2WwKgDQ2hDlvPhG2AHMXljzOzVdbWOHZ9tB4ax7rx7fywqq002Tk0024T');
+            var stripe = Stripe('<?php echo esc_js(get_option('stripe_publishable_key')); ?>');
             var elements = stripe.elements();
             var cardElement = elements.create('card');
             cardElement.mount('#card-element');
-            
-            document.getElementById('lightcommerce-checkout-form').addEventListener('submit', function(event) {
-                event.preventDefault();
-                stripe.createPaymentMethod({
-                    type: 'card',
-                    card: cardElement,
-                    billing_details: {
-                        name: document.getElementById('customer_name').value,
-                        email: document.getElementById('customer_email').value,
-                        address: {
-                            line1: document.getElementById('customer_address').value
-                        }
-                    }
-                }).then(function(result) {
-                    if (result.error) {
-                        // Handle errors
-                    } else {
-                        // Send payment method id to server to create payment intent
-                        fetch('<?php echo esc_url_raw(rest_url('lightcommerce/v1/create-payment-intent')); ?>', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({payment_method_id: result.paymentMethod.id})
-                        }).then(function(response) {
-                            return response.json();
-                        }).then(function(data) {
-                            // Handle server response
-                            if (data.success) {
-                                // Payment successful
-                                document.getElementById('checkout-message').innerHTML = 'Payment successful!';
-                            } else {
-                                // Payment failed
-                                document.getElementById('checkout-message').innerHTML = 'Payment failed!';
-                            }
-                        });
-                    }
-                });
-            });
         </script>
         <?php
         return ob_get_clean();
     }
+    
 
     public function create_payment_intent_rest($request) {
         $payment_method_id = $request->get_param('payment_method_id');
         
-        // Set your secret key
-        \Stripe\Stripe::setApiKey('sk_test_51Mw6NZH6GMgUDrK8XfLKnEDa2tY5YUYPtwPoewlEjesZykr1jfrp1vJUxxvpd2tccJFXNV8fYfBKZeUxP45vynqU007NSvESSR');
-    
+        \Stripe\Stripe::setApiKey(get_option('stripe_secret_key'));
+        
+        $cart = new Cart();
+        $cart_items = $cart->get_cart_items();
+        $total_amount = 0;
+        
+        if ($cart_items) {
+            foreach ($cart_items as $item) {
+                $product = $this->db->get_product($item->product_id);
+                if ($product) {
+                    $total_amount += $product->price * $item->quantity;
+                }
+            }
+        }
+        
+        // Convert total amount to cents
+        $total_amount_cents = $total_amount * 100;
+        
         try {
             $intent = \Stripe\PaymentIntent::create([
                 'payment_method' => $payment_method_id,
-                'amount' => 1000,  // Replace with the total amount of the cart
-                'currency' => 'usd', // Replace with your currency code
+                'amount' => $total_amount_cents,
+                'currency' => 'usd',
                 'confirmation_method' => 'manual',
                 'confirm' => true,
                 'return_url' => get_site_url(),
             ]);
     
-            // Payment Intent creation successful
-            return new \WP_REST_Response(['success' => true], 200);
+            // Add order
+            $params = $request->get_params();
+            $customer_name = sanitize_text_field($params['customer_name']);
+            $customer_address = sanitize_textarea_field($params['customer_address']);
+            $customer_email = sanitize_email($params['customer_email']);
+            $payment_method = sanitize_text_field($params['payment_method']);
+    
+            $order = new Order();
+            $order_id = $order->add_order($customer_name, $customer_address, $customer_email, $payment_method, $total_amount, 'completed');
+            if ($order_id) {
+                $cart->clear_cart();
+            }
+            return new \WP_REST_Response(['success' => true, 'order_id' => $order_id], 200);
         } catch (Exception $e) {
             // Error occurred while creating Payment Intent
             error_log('Error creating Payment Intent: ' . $e->getMessage());
-            return new \WP_REST_Response( $e->getMessage(), 500);
+            return new \WP_REST_Response(['message' => $e->getMessage()], 500);
         }
-    }  
+    }
+    
+     
 }

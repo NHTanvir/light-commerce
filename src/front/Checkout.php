@@ -26,7 +26,7 @@ class Checkout {
         $customer_name = sanitize_text_field($params['customer_name']);
         $customer_address = sanitize_textarea_field($params['customer_address']);
         $customer_email = sanitize_email($params['customer_email']);
-        // $payment_method = sanitize_text_field($params['payment_method']);
+        $payment_method = sanitize_text_field($params['payment_method']);
 
         // Calculate total amount based on cart items
         $cart = new Cart($this->db);
@@ -43,7 +43,7 @@ class Checkout {
         }
 
         $order = new Order();
-        $order_id = $order->add_order($customer_name, $customer_address, $customer_email, 'cod', $total_amount, 'completed');
+        $order_id = $order->add_order($customer_name, $customer_address, $customer_email, $payment_method, $total_amount, 'pending');
 
         if ($order_id) {
             $cart->clear_cart();
